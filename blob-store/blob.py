@@ -1,12 +1,66 @@
 from azure.storage.blob import BlockBlobService
+import pymongo as py
+import os
 
-block_blob_service = BlockBlobService(
-        account_name='hmrchackathon',
-        account_key='E6AiDaSVSsj7SaQWBB32KwaR4rtIAxu0+Jz8aD/V8S1jJafINMJFYDVBOic8NZVotRmKvwpGNmtT/Vh0w47zGg=='
-    )
-containers = block_blob_service.list_containers()
-for i in containers:
-    print(i.name)
-    generator = block_blob_service.list_blobs(i.name)
-    for blob in generator:
-        print("\t Blob name: " + blob.name)
+
+def create_file_metadata(f):
+    """Produce file metadata.
+
+    Convert blob store file to metadata dictionary
+    Input:
+        f: filename
+    Output:
+        d: metadata dictionary
+    """
+    folder, filename = f.split('/')
+    name, filetype = filename.split('.')
+    cn, ty, dt = name.split('_')
+    d = {
+            'azure_folder': folder, 'filename': filename, 'name': name,
+            'filetype': filetype, 'company_number': cn, 'doctype':ty,
+            'submit_date': dt
+        }
+    return d
+
+
+class AzureBlob():
+    """Wrapper around blob object"""
+    def __init__(self, name, key):
+        self.blob = BlockBlobService(
+            account_name = name,
+            account_key = key
+        )
+        self.containers = self.blob.list_containers()
+
+    def container_files(self, c):
+        return self.blob.list_blobs(c.name)
+
+
+def main():
+    client = py.MongoClient(os.environ['MONGO_URI'])
+    db = client.ch
+    docs = db.docs
+
+    included_folders = [
+        'administratorsprogress',
+        'companieshouseapi',
+        'liquidatorsstatement'
+        ]
+
+    ch = AzureBlob(os.environ['BLOB_NAME'], os.environ['BLOB_KEY'])
+
+    for container in ch.containers:
+        if container.name in included_folders:
+            for fl in ch.container_files(container):
+                docs.insert_one(create_file_metadata(fl.name))
+
+
+if __name__ == "__main__":
+    main()
+
+
+"""
+local_file  = '/home/gavin/Projects/ds-hack/blob-store/' + blob_files[0][1]
+#block_blob_service.get_blob_to_path(container_list[0], blob_files[0], local_file)
+"""
+
