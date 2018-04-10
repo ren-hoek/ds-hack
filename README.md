@@ -1,10 +1,10 @@
 # ds-hack
 
-#End goal
+# End goal
 Classify a range of text documents into types (accounts, reports etc.) 
 
-#Pipeline
-Seperate branch for each pipeline element as follows:
+# Pipeline
+Pipeline element as follows (seperate branch for each task)
 
 1. Prepare - Convert PDF to JPG and JPG to text (both handwritten and printed text) via Azure Computer Vision OCR API
 2. Extraction - Extract text from HTML.
