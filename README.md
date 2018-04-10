@@ -4,6 +4,9 @@
 Classify a range of text documents into types (accounts, reports etc.) 
 
 # Pipeline
+
+![pipeline](https://github.com/ren-hoek/ds-hack/blob/ocr/pipeline.jpg)
+
 Pipeline element as follows (seperate branch for each task)
 
 1. Prepare - Convert PDF to JPG and JPG to text (both handwritten and printed text) via Azure Computer Vision OCR API
