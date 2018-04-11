@@ -94,27 +94,15 @@ class AzureBlob():
         return self.blob.list_blobs(c.name)
 
 
-def main():
-    client = py.MongoClient(os.environ['MONGO_URI'])
-    db = client.ch
+def extract_handwriting(imgs):
+    """Extract Handwriting from images.
 
-    ch = AzureBlob(os.environ['BLOB_NAME'], os.environ['BLOB_KEY'])
-    blob_file = db.docs.find_one({'filetype': 'pdf', 'doctype': 'annual-returns'})
-
-    #print(blob_file['container'], blob_file['blob_file'])
-
-    ch.blob.get_blob_to_path(
-            blob_file['container'],
-            blob_file['blob_file'],
-            blob_file['filename']
-        )
-
-    pages = create_jpg(blob_file['filename'])
-    #print(pages['page_count'])
-    #print(pages['pages'])
-
-
-
+    Extract handwritten text from a set of JPG images
+    Input:
+        imgs: List of PIL image files
+    Output:
+        d: K-V pair (extracted_hand: List of text
+    """
     params = {'handwriting' : 'true'}
     headers = dict()
     headers['Ocp-Apim-Subscription-Key'] = _key
@@ -123,32 +111,54 @@ def main():
 
     API_call_flat = []
 
-    for i in pages['pages']:
+    for i in imgs:
         i.save('test.jpg')
         with open('test.jpg', 'rb') as f:
             data = f.read()
         API_call = process_request(json, data, headers, params)
         API_call_flat.append(list(find('text', API_call)))
 
-
     extracted_hand = [x for y in API_call_flat for x in y]
 
-    text_output = dict()
-    text_output['extracted_hand'] = extracted_hand
+    d = dict()
+    d['extracted_hand'] = extracted_hand
+    return d
 
-    print(blob_file['filename'])
 
-    for f in db.docs.find({'filename': blob_file['filename']}):
-        db.docs.update_one({'_id': f['_id']}, {'$set': text_output})
+def main():
+    client = py.MongoClient(os.environ['MONGO_URI'])
+    db = client.ch
 
-    for f in db.docs.find({'filename': blob_file['filename']}):
-        print(f)
+    ch = AzureBlob(os.environ['BLOB_NAME'], os.environ['BLOB_KEY'])
+    blob_files = db.docs.find({'filetype': 'pdf', 'doctype': 'annual-returns'})
+
+
+    for i, blob_file in enumerate(blob_files):
+        if i>4:
+            break
+
+        ch.blob.get_blob_to_path(
+            blob_file['container'],
+            blob_file['blob_file'],
+            blob_file['filename']
+        )
+
+        pages = create_jpg(blob_file['filename'])
+
+        text_output = extract_handwriting(pages['pages'])
+
+        print(blob_file['filename'])
+
+        for f in db.docs.find({'filename': blob_file['filename']}):
+            db.docs.update_one({'_id': f['_id']}, {'$set': text_output})
+
+        for f in db.docs.find({'filename': blob_file['filename']}):
+            print(f)
+
+        os.remove(blob_file['filename'])
+        os.remove('test.jpg')
+
 
 if __name__ == "__main__":
     main()
-
-
-"""
-local_file  = '/home/gavin/Projects/ds-hack/blob-store/' + blob_files[0][1]
-"""
 

@@ -59,9 +59,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-"""
-local_file  = '/home/gavin/Projects/ds-hack/blob-store/' + blob_files[0][1]
-#block_blob_service.get_blob_to_path(container_list[0], blob_files[0], local_file)
-"""
-
