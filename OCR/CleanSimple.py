@@ -12,7 +12,7 @@
 
 
 # import libraries
-import time 
+import time
 import requests
 import cv2
 import operator
@@ -40,7 +40,7 @@ Image(_document) # dispaly the doc in the notebook
 
 # Helper Function from Microsoft Notebook at link below to help us call the API cleanly
 # https://github.com/Microsoft/Cognitive-Vision-Python/blob/master/Jupyter%20Notebook/Handwriting%20OCR%20API%20Example.ipynb
-    
+
 def processRequest( json, data, headers, params ):
 
     """
@@ -60,11 +60,11 @@ def processRequest( json, data, headers, params ):
 
         if response.status_code == 429:
             print( "Message: %s" % ( response.json() ) )
-            if retries <= _maxNumRetries: 
-                time.sleep(1) 
+            if retries <= _maxNumRetries:
+                time.sleep(1)
                 retries += 1
                 continue
-            else: 
+            else:
                 print( 'Error: failed after retrying!' )
                 break
         elif response.status_code == 202:
@@ -73,7 +73,7 @@ def processRequest( json, data, headers, params ):
             print( "Error code: %d" % ( response.status_code ) )
         #    print( "Message: %s" % ( response.json() ) )
         break
-        
+
     return response.json()
 
 
@@ -87,7 +87,7 @@ image_path = "C:/Users/virtualmachine2/cog_vision/images/" # your folder that ho
 # Loop through items in folder and append to list filecontainer
 for item in os.listdir(image_path):
     filecontainer.append((os.path.join(image_path,item)))
-    
+
 print(filecontainer) # print out list of image file names
 
 
@@ -133,7 +133,7 @@ for i in filecontainer:
     API_call = (processRequest(json, data, headers, params))
    #Flatten out just the words using the find() function above and append it to the list API_call_flat     
     API_call_flat.append(list(find('text', API_call)))
-    
+
 # This prints out "Error code: 200" that means success
 
 
@@ -141,7 +141,7 @@ for i in filecontainer:
 
 
 # Just look at the words of the first image in the list of all the images
-API_call_flat[0] 
+API_call_flat[0]
 
 
 # In[159]:
