@@ -40,21 +40,17 @@ class AzureBlob():
 def main():
     client = py.MongoClient(os.environ['MONGO_URI'])
     db = client.ch
-    docs = db.docs
-
-    included_folders = [
-        'administratorsprogress',
-        'companieshouseapi',
-        'liquidatorsstatement'
-        ]
 
     ch = AzureBlob(os.environ['BLOB_NAME'], os.environ['BLOB_KEY'])
+    blob_file = db.docs.find_one({'filetype': 'pdf'})
 
-    for container in ch.containers:
-        if container.name in included_folders:
-            for fl in ch.container_files(container):
-                docs.insert_one(create_file_metadata(fl.name, container.name))
+    print(blob_file['container'], blob_file['blob_file'])
 
+    ch.blob.get_blob_to_path(
+            blob_file['container'],
+            blob_file['blob_file'],
+            blob_file['filename']
+        )
 
 if __name__ == "__main__":
     main()
@@ -62,6 +58,5 @@ if __name__ == "__main__":
 
 """
 local_file  = '/home/gavin/Projects/ds-hack/blob-store/' + blob_files[0][1]
-#block_blob_service.get_blob_to_path(container_list[0], blob_files[0], local_file)
 """
 
