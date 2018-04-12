@@ -1,6 +1,6 @@
 # ds-hack
 
-![ocr](https://github.com/ren-hoek/ds-hack/blob/ocr/Process.pdf)
+![Process](https://github.com/ren-hoek/ds-hack/blob/master/Process.png)
 
 # End goal
 
@@ -10,11 +10,15 @@ Classify a range of text documents into types (accounts, reports etc.)
 
 Pipeline element as follows (seperate branch for each task)
 
-1. Prepare - Convert PDF to JPG and JPG to text (both handwritten and printed text) via Azure Computer Vision OCR API
-2. Extraction - Extract text from HTML.
-3. Process - Entity extraction, stopword removal, lemmatization etc. 
-4. Modeling (Unsupervised) - Cluster on TFIDF, Word2Vec, Doc2Vec. Fitted with both a local model and famous pre-trained models such as Glove
-5. Modeling (Supervised)- Create features using regular expressions and feed into Logisitc regression, SVM etc.
+1. Convert Inputs to text
+1a. Image to text - Convert image to text (handwritten and printed text) via Azure Computer Vision OCR API
+1b. XHTML to text - Extract text from XHTML using Beautiful Soup
+1c. PDF to text - Use Pytesseract to convert PDF to text
+2. Text to Database - send text to database using 
+3. Enhance Database - Entity recogniton, NLP preprocessing (e.g. lemmatization, stopwords) and geocoding.
+4. Modelling - Peform TFIDF and Word2Vec and produce clusters and document similarity
+5. Surfacing - Front end in Flask, hosted on Azure. Can search and return modelling results.
+ 
 
 
 
