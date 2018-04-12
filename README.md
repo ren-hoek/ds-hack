@@ -1,11 +1,12 @@
 # ds-hack
 
+![ocr](https://github.com/ren-hoek/ds-hack/blob/ocr/download.jpg)
+
 # End goal
+
 Classify a range of text documents into types (accounts, reports etc.) 
 
 # Pipeline
-
-![pipeline](https://github.com/ren-hoek/ds-hack/blob/ocr/pipeline.jpg)
 
 Pipeline element as follows (seperate branch for each task)
 
