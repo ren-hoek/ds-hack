@@ -125,6 +125,23 @@ def extract_handwriting(imgs):
     return d
 
 
+def remove_if_exists(f):
+    """Remove file if exists.
+
+    Remove a file but skips if file doesn't
+    Inputs:
+        f: path to file to remove
+    Output:
+        Boolean removed of not
+    """
+    try:
+        os.remove(f)
+        return True
+    except OSError:
+        pass
+    return False
+
+
 def main():
     client = py.MongoClient(os.environ['MONGO_URI'])
     db = client.ch
@@ -134,20 +151,23 @@ def main():
 
 
     for i, blob_file in enumerate(blob_files):
+        """
         if i>4:
             break
+        """
+        try:
+            ch.blob.get_blob_to_path(
+                blob_file['container'],
+                blob_file['blob_file'],
+                blob_file['filename']
+            )
 
-        ch.blob.get_blob_to_path(
-            blob_file['container'],
-            blob_file['blob_file'],
-            blob_file['filename']
-        )
+            pages = create_jpg(blob_file['filename'])
+            text_output = extract_handwriting(pages['pages'])
+            print(blob_file['filename'])
 
-        pages = create_jpg(blob_file['filename'])
-
-        text_output = extract_handwriting(pages['pages'])
-
-        print(blob_file['filename'])
+        except:
+            text_output = {'extracted_hand': ''}
 
         for f in db.docs.find({'filename': blob_file['filename']}):
             db.docs.update_one({'_id': f['_id']}, {'$set': text_output})
@@ -155,8 +175,8 @@ def main():
         for f in db.docs.find({'filename': blob_file['filename']}):
             print(f)
 
-        os.remove(blob_file['filename'])
-        os.remove('test.jpg')
+        remove_if_exists(blob_file['filename'])
+        remove_if_exists('test.jpg')
 
 
 if __name__ == "__main__":
