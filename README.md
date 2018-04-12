@@ -10,10 +10,10 @@ Classify a range of text documents into types (accounts, reports etc.)
 
 Pipeline element as follows (seperate branch for each task)
 
-1. Convert Inputs to text
-1a. Image to text - Convert image to text (handwritten and printed text) via Azure Computer Vision OCR API
-1b. XHTML to text - Extract text from XHTML using Beautiful Soup
-1c. PDF to text - Use Pytesseract to convert PDF to text
+1. Convert Inputs to text <br/>
+1a. Image to text - Convert image to text (handwritten and printed text) via Azure Computer Vision OCR API <br/>
+1b. XHTML to text - Extract text from XHTML using Beautiful Soup <br/>
+1c. PDF to text - Use Pytesseract to convert PDF to text <br/>
 2. Text to Database - send text to database using 
 3. Enhance Database - Entity recogniton, NLP preprocessing (e.g. lemmatization, stopwords) and geocoding.
 4. Modelling - Peform TFIDF and Word2Vec and produce clusters and document similarity
