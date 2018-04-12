@@ -10,7 +10,7 @@ Take a variety of document types, process into text and surface a front end with
 
 Pipeline was as follows:
 
-1. Convert Inputs to text <br/>
+1. Convert inputs to text: <br/>
 1a. Image to text - Convert image to text (handwritten and printed text) via Azure Computer Vision OCR API <br/>
 1b. XHTML to text - Extract text from XHTML using Beautiful Soup <br/>
 1c. PDF to text - Use Pytesseract to convert PDF to text <br/>
