@@ -1,6 +1,6 @@
 # ds-hack
 
-![ocr](https://github.com/ren-hoek/ds-hack/blob/ocr/download.jpg)
+![ocr](https://github.com/ren-hoek/ds-hack/blob/ocr/Process.pdf)
 
 # End goal
 
