@@ -95,7 +95,7 @@ def extract_ocr_text(imgs):
     Input:
         imgs: List of PIL image files
     Output:
-        d: K-V pair (extracted_ocr: List of text
+        d: K-V pair (extracted_ocr: List of text)
     """
     params = {'handwriting' : 'true'}
     headers = dict()
@@ -117,3 +117,4 @@ def extract_ocr_text(imgs):
     d = dict()
     d['extracted_ocr'] = extracted_hand
     return d
+
