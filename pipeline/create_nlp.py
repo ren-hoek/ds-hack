@@ -1,6 +1,7 @@
 from pipeline import azure as az
 from pipeline import nlp
 
+
 def main():
     docs = az.get_cosmos_collection('mongo', 'ch', 'docs')
     ch = az.AzureBlob('ch')
@@ -14,9 +15,8 @@ def main():
             break
 
         nlp_extract = nlp.text_cleaner(" ".join(blob_file['extracted_html']))
-        #update_record=az.update_cosmos_document('mongo', docs, blob_file, hand_text)
-        #az.print_cosmos_document('mongo', docs, blob_file)
-        print(nlp_extract)
+        update_record=az.update_cosmos_document('mongo', docs, blob_file, nlp_extract)
+        az.print_cosmos_document('mongo', docs, blob_file)
 
     return True
 
