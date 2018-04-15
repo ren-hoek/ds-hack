@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-10">
+        <div class="jumbo">
+          <h2>Documents</h2>
+          <h3>Search Extracted Text</h3>
+  <div class="form-group">
+    <label for="d3">Search:</label>
+    <input class="form-control" id="d3"></textarea>
+  </div>
+  <button id="go" onclick="clickEvent();" class="btn btn-default">Submit</button>
+  <br />
+  <hr />
+  <br />
+  <div id="ajax"></div>
+        </div>
+      </div> 	
+      <div class="col-sm-1"></div>
+    </div>
+  </div>
+
+<script type="text/javascript">
+function clickEvent() {
+
+    var inp = $("#d3").val()
+    
+    d3.json('/data')
+    .header("Content-Type", "application/json")
+    .post(JSON.stringify({a: inp}),function(error, data) {
+      var res = '<table class="table table-condensed">'
+      for (x in data) {
+        res = res + '<tr><td>' + data[x] + '...</td></tr>'
+      }
+      res = res + '</table>'
+      $("#ajax").html(res)
+    });
+
+}
+</script>
+
+{% endblock %}
