@@ -18,7 +18,7 @@ def main():
             blob_file['filename']
         )
 
-        html_text = xh.create_text(blob_file['filename'])
+        nlp = nlp.text_cleaner(blob_file['filename'])
         update_record=az.update_cosmos_document('mongo', docs, blob_file, html_text)
         az.print_cosmos_document('mongo', docs, blob_file)
         az.remove_if_exists(blob_file['filename'])
