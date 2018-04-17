@@ -1,11 +1,10 @@
-from azure.storage.blob import BlockBlobService
-import pymongo as py
 import os
 import io
 from PIL import Image
 import wand.image as wd
 import requests
 import time
+
 
 _url = os.environ['VISION_URL']
 _key = os.environ['VISION_KEY']
@@ -51,7 +50,14 @@ def process_request( json, data, headers, params ):
     result = None
 
     while True:
-        response = requests.request( 'post', _url, json = json, data = data, headers = headers, params = params )
+        response = requests.request(
+                'post',
+                _url,
+                json = json,
+                data = data,
+                headers = headers,
+                params = params
+        )
 
         if response.status_code == 429:
             if retries <= _maxNumRetries:
@@ -82,27 +88,14 @@ def find(key, dictionary):
                     yield result
 
 
-class AzureBlob():
-    """Wrapper around blob object."""
-    def __init__(self, name, key):
-        self.blob = BlockBlobService(
-            account_name = name,
-            account_key = key
-        )
-        self.containers = self.blob.list_containers()
-
-    def container_files(self, c):
-        return self.blob.list_blobs(c.name)
-
-
-def extract_handwriting(imgs):
-    """Extract Handwriting from images.
+def extract_ocr_text(imgs):
+    """Extract ocr text from images.
 
     Extract handwritten text from a set of JPG images
     Input:
         imgs: List of PIL image files
     Output:
-        d: K-V pair (extracted_hand: List of text
+        d: K-V pair (extracted_ocr: List of text)
     """
     params = {'handwriting' : 'true'}
     headers = dict()
@@ -122,64 +115,6 @@ def extract_handwriting(imgs):
     extracted_hand = [x for y in API_call_flat for x in y]
 
     d = dict()
-    d['extracted_hand'] = extracted_hand
+    d['extracted_ocr'] = extracted_hand
     return d
-
-
-def remove_if_exists(f):
-    """Remove file if exists.
-
-    Remove a file but skips if file doesn't
-    Inputs:
-        f: path to file to remove
-    Output:
-        Boolean removed of not
-    """
-    try:
-        os.remove(f)
-        return True
-    except OSError:
-        pass
-    return False
-
-
-def main():
-    client = py.MongoClient(os.environ['MONGO_URI'])
-    db = client.ch
-
-    ch = AzureBlob(os.environ['BLOB_NAME'], os.environ['BLOB_KEY'])
-    blob_files = db.docs.find({'filetype': 'pdf', 'doctype': 'annual-returns'})
-
-
-    for i, blob_file in enumerate(blob_files):
-        """
-        if i>4:
-            break
-        """
-        try:
-            ch.blob.get_blob_to_path(
-                blob_file['container'],
-                blob_file['blob_file'],
-                blob_file['filename']
-            )
-
-            pages = create_jpg(blob_file['filename'])
-            text_output = extract_handwriting(pages['pages'])
-            print(blob_file['filename'])
-
-        except:
-            text_output = {'extracted_hand': ''}
-
-        for f in db.docs.find({'filename': blob_file['filename']}):
-            db.docs.update_one({'_id': f['_id']}, {'$set': text_output})
-
-        for f in db.docs.find({'filename': blob_file['filename']}):
-            print(f)
-
-        remove_if_exists(blob_file['filename'])
-        remove_if_exists('test.jpg')
-
-
-if __name__ == "__main__":
-    main()
 
